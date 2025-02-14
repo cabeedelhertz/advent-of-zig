@@ -1,5 +1,11 @@
 const std = @import("std");
 
+pub fn openFile(input_file_name: []const u8) !std.fs.File {
+    var path_buffer: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+    const path = try std.fs.realpath(input_file_name, &path_buffer);
+    return try std.fs.openFileAbsolute(path, .{});
+}
+
 const Line = struct {
     left: i32,
     right: i32,

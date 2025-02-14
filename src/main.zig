@@ -1,6 +1,6 @@
 const std = @import("std");
 const day1 = @import("day1.zig");
-
+const day2 = @import("day2.zig");
 pub fn main() !void {
     const day = try promptUser();
 
@@ -14,6 +14,15 @@ pub fn main() !void {
             std.debug.print("Part 2: What is their similarity score?\n", .{});
             const similarity_score = try day1.solveSimilarityScore("day1_input.txt"); // uses the same input file
             std.debug.print("Answer: {d}\n", .{similarity_score});
+        },
+        2 => {
+            std.debug.print("Running day 2...\n", .{});
+            std.debug.print("Part 1: How many reports are safe?\n", .{});
+            const safe_reports_count = try day2.solveSafeReports("day2_input.txt");
+            std.debug.print("Answer: {d}\n", .{safe_reports_count});
+            std.debug.print("Part 2: How many reports are safe with fault tolerance?\n", .{});
+            const safe_reports_count_with_ft = try day2.solveSafeReportsWithFt("day2_input.txt");
+            std.debug.print("Answer: {d}\n", .{safe_reports_count_with_ft});
         },
         else => {
             std.debug.print("No solution available for day {d}\n", .{day});

@@ -9,9 +9,7 @@ pub fn solveTotalDistance(input_file: []const u8) !i32 {
 
     const allocator = gpa.allocator();
 
-    var path_buffer: [std.fs.MAX_PATH_BYTES]u8 = undefined;
-    const path = try std.fs.realpath(input_file, &path_buffer);
-    var file = try std.fs.openFileAbsolute(path, .{});
+    const file = try utils.openFile(input_file);
     defer file.close();
 
     const length = 1000;
