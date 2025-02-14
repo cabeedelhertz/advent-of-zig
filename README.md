@@ -8,3 +8,4 @@ zig build
 
 ./zig-out/bin/advent-of-zig
 ```
+![alt text](assets/example.png)
