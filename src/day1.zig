@@ -48,7 +48,7 @@ pub fn solve(input_file: []const u8) !u32 {
 
         var proccessed_left: bool = false;
         var proccessed_right: bool = false;
-        for (0..line_no + 1) |i| {
+        for (0..line_no) |i| {
             if (proccessed_left and proccessed_right) {
                 break;
             }
