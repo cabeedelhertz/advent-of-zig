@@ -1,6 +1,7 @@
 const std = @import("std");
+const utils = @import("utils.zig");
 
-pub fn solve(input_file: []const u8) !u32 {
+pub fn solveTotalDistance(input_file: []const u8) !i32 {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer {
         std.debug.assert(gpa.deinit() == .ok);
@@ -15,9 +16,9 @@ pub fn solve(input_file: []const u8) !u32 {
 
     const length = 1000;
 
-    var left_list = try std.ArrayList(u32).initCapacity(allocator, length);
+    var left_list = try std.ArrayList(i32).initCapacity(allocator, length);
     defer left_list.deinit();
-    var right_list = try std.ArrayList(u32).initCapacity(allocator, length);
+    var right_list = try std.ArrayList(i32).initCapacity(allocator, length);
     defer right_list.deinit();
 
     var line_no: usize = 0;
@@ -27,18 +28,8 @@ pub fn solve(input_file: []const u8) !u32 {
     var buf: [1024]u8 = undefined;
     while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
         defer line_no += 1;
-        var split = std.mem.split(u8, line, "   ");
-        var left: u32, var right: u32 = .{ 0, 0 };
-        if (split.next()) |left_str| {
-            left = try std.fmt.parseInt(u32, left_str, 10);
-        } else {
-            return error.InvalidInput;
-        }
-        if (split.next()) |right_str| {
-            right = try std.fmt.parseInt(u32, right_str, 10);
-        } else {
-            return error.InvalidInput;
-        }
+        const parsed_line = try utils.parseLeftAndRight(line);
+        const left, const right = .{ parsed_line.left, parsed_line.right };
 
         if (line_no == 0) {
             try left_list.append(left);
@@ -73,9 +64,54 @@ pub fn solve(input_file: []const u8) !u32 {
         }
     }
 
-    var totalDistance: u32 = 0;
+    var totalDistance: i32 = 0;
     for (0..length) |i| {
         totalDistance += @max(left_list.items[i], right_list.items[i]) - @min(left_list.items[i], right_list.items[i]);
     }
     return totalDistance;
+}
+
+pub fn solveSimilarityScore(input_file: []const u8) !i32 {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer {
+        std.debug.assert(gpa.deinit() == .ok);
+    }
+
+    const allocator = gpa.allocator();
+
+    var path_buffer: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+    const path = try std.fs.realpath(input_file, &path_buffer);
+    var file = try std.fs.openFileAbsolute(path, .{});
+    defer file.close();
+
+    const length = 1000;
+
+    var left_list = try std.ArrayList(i32).initCapacity(allocator, length);
+    defer left_list.deinit();
+
+    var right_map = std.AutoHashMap(i32, i32).init(allocator);
+    defer right_map.deinit();
+    try right_map.ensureTotalCapacity(1000);
+
+    var buf_reader = std.io.bufferedReader(file.reader());
+    var in_stream = buf_reader.reader();
+    var buf: [1024]u8 = undefined;
+    while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+        const parsed_line = try utils.parseLeftAndRight(line);
+
+        try left_list.append(parsed_line.left);
+        if (right_map.get(parsed_line.right)) |v| {
+            try right_map.put(parsed_line.right, v + 1);
+        } else {
+            try right_map.put(parsed_line.right, 1);
+        }
+    }
+
+    var similarity_score: i32 = 0;
+    for (left_list.items) |left| {
+        if (right_map.get(left)) |v| {
+            similarity_score += left * v;
+        }
+    }
+    return similarity_score;
 }
