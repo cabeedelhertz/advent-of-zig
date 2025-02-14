@@ -6,17 +6,12 @@ pub fn solve(input_file: []const u8) !u32 {
         std.debug.assert(gpa.deinit() == .ok);
     }
 
-    var allocator = gpa.allocator();
+    const allocator = gpa.allocator();
 
     var path_buffer: [std.fs.MAX_PATH_BYTES]u8 = undefined;
     const path = try std.fs.realpath(input_file, &path_buffer);
     var file = try std.fs.openFileAbsolute(path, .{});
     defer file.close();
-
-    const file_buffer = try file.readToEndAlloc(allocator, 15000);
-    defer allocator.free(file_buffer);
-
-    var input_iter = std.mem.split(u8, file_buffer, "\n");
 
     const length = 1000;
 
@@ -26,7 +21,11 @@ pub fn solve(input_file: []const u8) !u32 {
     defer right_list.deinit();
 
     var line_no: usize = 0;
-    while (input_iter.next()) |line| {
+
+    var buf_reader = std.io.bufferedReader(file.reader());
+    var in_stream = buf_reader.reader();
+    var buf: [1024]u8 = undefined;
+    while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
         defer line_no += 1;
         var split = std.mem.split(u8, line, "   ");
         var left: u32, var right: u32 = .{ 0, 0 };

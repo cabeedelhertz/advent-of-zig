@@ -4,6 +4,7 @@ const day1 = @import("day1.zig");
 pub fn main() !void {
     const day = try promptUser();
 
+    const start_time = try std.time.Instant.now();
     switch (day) {
         1 => {
             std.debug.print("Running day 1...\n", .{});
@@ -14,6 +15,10 @@ pub fn main() !void {
             std.debug.print("No solution available for day {d}\n", .{day});
         },
     }
+    const end_time = try std.time.Instant.now();
+    const elapsed: f64 = @floatFromInt(end_time.since(start_time));
+
+    std.debug.print("time to solve: {d:.3}ms\n", .{elapsed / std.time.ns_per_ms});
 }
 
 fn promptUser() !u8 {
