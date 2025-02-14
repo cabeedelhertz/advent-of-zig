@@ -1,5 +1,6 @@
 const std = @import("std");
 const day1 = @import("day1.zig");
+const day2 = @import("day2.zig");
 
 pub fn main() !void {
     const day = try promptUser();
@@ -7,8 +8,13 @@ pub fn main() !void {
     const start_time = try std.time.Instant.now();
     switch (day) {
         1 => {
-            std.debug.print("Running day 1...\n", .{});
+            std.debug.print("Running day 1... What is the total distance between your lists?\n", .{});
             const answer = try day1.solve("day1_input.txt");
+            std.debug.print("Answer: {d}\n", .{answer});
+        },
+        2 => {
+            std.debug.print("Running day 2... What is their similarity score?\n", .{});
+            const answer = try day2.solve("day1_input.txt"); // uses the same input file
             std.debug.print("Answer: {d}\n", .{answer});
         },
         else => {
