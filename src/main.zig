@@ -1,6 +1,8 @@
 const std = @import("std");
 const day1 = @import("day1.zig");
 const day2 = @import("day2.zig");
+const day3 = @import("day3.zig");
+
 pub fn main() !void {
     const day = try promptUser();
 
@@ -23,6 +25,15 @@ pub fn main() !void {
             std.debug.print("Part 2: How many reports are safe with fault tolerance?\n", .{});
             const safe_reports_count_with_ft = try day2.solveSafeReportsWithFt("day2_input.txt");
             std.debug.print("Answer: {d}\n", .{safe_reports_count_with_ft});
+        },
+        3 => {
+            std.debug.print("Running day 3...\n", .{});
+            std.debug.print("Part 1: What is the multiplication of the numbers?\n", .{});
+            const multiplication = try day3.solveMultiplication("day3_input.txt", day3.Part.one);
+            std.debug.print("Answer: {d}\n", .{multiplication});
+            std.debug.print("Part 2: What is the multiplication of the numbers with do/dont?\n", .{});
+            const multiplication_with_do_dont = try day3.solveMultiplication("day3_input.txt", day3.Part.two);
+            std.debug.print("Answer: {d}\n", .{multiplication_with_do_dont});
         },
         else => {
             std.debug.print("No solution available for day {d}\n", .{day});
